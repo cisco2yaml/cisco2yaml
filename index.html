@@ -42,6 +42,7 @@
         <div class="mb-6 flex justify-center border-b border-gray-700">
             <button class="tab-btn active text-lg font-semibold py-3 px-6 text-gray-400 hover:bg-gray-800 rounded-t-lg" data-tab="playbook-generator">Playbook Generator</button>
             <button class="tab-btn text-lg font-semibold py-3 px-6 text-gray-400 hover:bg-gray-800 rounded-t-lg" data-tab="inventory-builder">Inventory Builder</button>
+            <button class="tab-btn text-lg font-semibold py-3 px-6 text-gray-400 hover:bg-gray-800 rounded-t-lg" data-tab="backup-restore">Backup & Restore</button>
         </div>
 
         <!-- Tab Content -->
@@ -68,28 +69,27 @@
                             <label for="sshUser" class="block text-sm font-medium text-cyan-400 mb-1">SSH Username <span class="text-gray-500">(Optional)</span></label>
                             <input type="text" id="sshUser" class="w-full bg-gray-900 text-gray-300 p-2 rounded-lg border-2 border-gray-700 focus:border-cyan-500 focus:ring-cyan-500 transition duration-200" placeholder="cisco">
                         </div>
-                        <div class="lg:col-span-4">
-                            <div class="flex items-center mt-2">
+                        <div class="lg:col-span-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+                             <div class="flex items-center">
+                                <input type="checkbox" id="becomeCheckbox" class="h-4 w-4 rounded border-gray-500 text-cyan-600 focus:ring-cyan-500 bg-gray-700 mr-2 cursor-pointer">
+                                <label for="becomeCheckbox" class="text-sm font-medium text-cyan-400 cursor-pointer">Use Enable Mode (`become`)</label>
+                            </div>
+                             <div class="flex items-center">
                                 <input type="checkbox" id="parseOutputCheckbox" class="h-4 w-4 rounded border-gray-500 text-cyan-600 focus:ring-cyan-500 bg-gray-700 mr-2 cursor-pointer">
                                 <label for="parseOutputCheckbox" class="text-sm font-medium text-cyan-400 cursor-pointer">Parse 'show' command output (Advanced)</label>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1 ml-6">When checked, uses `ntc_templates` to return structured JSON instead of raw text.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Main Content Grid -->
                 <div class="grid lg:grid-cols-2 gap-6">
-                    <!-- Left Column: Input -->
                     <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
                         <h2 class="text-2xl font-semibold mb-4 text-white">2. Enter CLI Commands</h2>
                         <textarea id="cliInput" class="w-full h-96 bg-gray-900 text-gray-300 p-4 rounded-lg border-2 border-gray-700 focus:border-cyan-500 focus:ring-cyan-500 transition duration-200 fira-code resize-none" placeholder="hostname CORE-SWITCH-01&#10;sh ip int br"></textarea>
                     </div>
-
-                    <!-- Right Column: Outputs -->
                     <div class="bg-gray-800 p-6 rounded-xl shadow-lg space-y-6">
                         <h2 class="text-2xl font-semibold mb-2 text-white">3. Get Your Playbook</h2>
-                        
                         <div>
                             <div class="flex justify-between items-center mb-2">
                                 <label class="block text-lg font-semibold text-emerald-400">Ansible Playbook YAML</label>
@@ -97,14 +97,14 @@
                             </div>
                             <pre class="w-full h-64 bg-gray-900 p-3 rounded-lg border-2 border-gray-700 overflow-auto"><code id="yamlOutput" class="fira-code text-gray-300 whitespace-pre"># Fill setup to generate...</code></pre>
                         </div>
-                        
                         <div>
                             <div class="flex justify-between items-center mb-2">
                                 <label class="block text-lg font-semibold text-emerald-400">Run Command</label>
                                 <button id="copyCmdBtn" class="bg-gray-700 hover:bg-emerald-600 text-white font-bold py-1 px-3 rounded-lg transition duration-200 text-sm">Copy</button>
                             </div>
                             <pre class="w-full bg-gray-900 p-3 rounded-lg border-2 border-gray-700 overflow-auto"><code id="runCommand" class="fira-code text-gray-300 whitespace-pre"># Fill setup to generate...</code></pre>
-                            <p id="k-flag-note" class="text-xs text-gray-400 mt-2" style="display: none;">Note: The `-k` flag will prompt you to enter the SSH password in your terminal.</p>
+                            <p id="k-flag-note" class="text-xs text-gray-400 mt-2" style="display: none;">Note: The `-k` flag will prompt for the SSH password.</p>
+                            <p id="K-flag-note" class="text-xs text-gray-400 mt-1" style="display: none;">Note: The `-K` flag will prompt for the enable password.</p>
                         </div>
                     </div>
                 </div>
@@ -114,7 +114,6 @@
             <div id="inventory-builder" class="tab-content">
                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
                     <div class="grid md:grid-cols-2 gap-6">
-                        <!-- Left: Inputs -->
                         <div class="space-y-4">
                             <div>
                                 <label for="inventoryGroupName" class="block text-sm font-medium text-cyan-400 mb-1">Inventory Group Name</label>
@@ -126,13 +125,55 @@
                             </div>
                             <button id="buildInventoryBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 text-base shadow-md hover:shadow-lg w-full">Build Inventory File</button>
                         </div>
-                        <!-- Right: Output -->
                         <div>
                             <div class="flex justify-between items-center mb-2">
                                 <label class="block text-lg font-semibold text-emerald-400">Generated Inventory</label>
                                 <button id="copyInventoryBtn" class="bg-gray-700 hover:bg-emerald-600 text-white font-bold py-1 px-3 rounded-lg transition duration-200 text-sm">Copy</button>
                             </div>
                             <pre class="w-full h-72 bg-gray-900 p-3 rounded-lg border-2 border-gray-700 overflow-auto"><code id="inventoryOutput" class="fira-code text-gray-300 whitespace-pre"># Inventory will appear here...</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backup & Restore Tab -->
+            <div id="backup-restore" class="tab-content">
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <!-- Backup Section -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-semibold mb-4 text-white">Backup Configuration</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="backupHostsGroup" class="block text-sm font-medium text-cyan-400 mb-1">Target Hosts Group</label>
+                                <input type="text" id="backupHostsGroup" class="w-full bg-gray-900 text-gray-300 p-2 rounded-lg border-2 border-gray-700 focus:border-cyan-500 focus:ring-cyan-500 transition duration-200" placeholder="cisco_switches">
+                            </div>
+                            <button id="generateBackupBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 text-base shadow-md hover:shadow-lg w-full">Generate Backup Playbook</button>
+                             <div>
+                                <label class="block text-lg font-semibold text-emerald-400 mt-4">Backup Playbook</label>
+                                <pre class="w-full h-48 bg-gray-900 p-3 rounded-lg border-2 border-gray-700 overflow-auto mt-2"><code id="backupPlaybookOutput" class="fira-code text-gray-300 whitespace-pre"># Playbook will appear here...</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Restore Section -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-semibold mb-4 text-white">Restore Configuration</h2>
+                        <div class="bg-red-900 border border-red-700 text-red-300 px-4 py-3 rounded-lg mb-4">
+                            <strong>Warning:</strong> This is a destructive operation and will overwrite the device's running configuration. Use with extreme caution.
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="restoreHost" class="block text-sm font-medium text-cyan-400 mb-1">Target Host Name (from inventory)</label>
+                                <input type="text" id="restoreHost" class="w-full bg-gray-900 text-gray-300 p-2 rounded-lg border-2 border-gray-700 focus:border-cyan-500 focus:ring-cyan-500 transition duration-200" placeholder="switch-1">
+                            </div>
+                             <div>
+                                <label for="restoreFile" class="block text-sm font-medium text-cyan-400 mb-1">Path to Backup File</label>
+                                <input type="text" id="restoreFile" class="w-full bg-gray-900 text-gray-300 p-2 rounded-lg border-2 border-gray-700 focus:border-cyan-500 focus:ring-cyan-500 transition duration-200" placeholder="./backup/switch-1_config.2025-07-13@15-19-15">
+                            </div>
+                            <button id="generateRestoreBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 text-base shadow-md hover:shadow-lg w-full">Generate Restore Playbook</button>
+                             <div>
+                                <label class="block text-lg font-semibold text-emerald-400 mt-4">Restore Playbook</label>
+                                <pre class="w-full h-48 bg-gray-900 p-3 rounded-lg border-2 border-gray-700 overflow-auto mt-2"><code id="restorePlaybookOutput" class="fira-code text-gray-300 whitespace-pre"># Playbook will appear here...</code></pre>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -152,28 +193,36 @@
         const yamlOutput = document.getElementById('yamlOutput');
         const runCommand = document.getElementById('runCommand');
         
-        // Inventory Builder selectors
         const inventoryGroupName = document.getElementById('inventoryGroupName');
         const ipList = document.getElementById('ipList');
         const buildInventoryBtn = document.getElementById('buildInventoryBtn');
         const inventoryOutput = document.getElementById('inventoryOutput');
         const copyInventoryBtn = document.getElementById('copyInventoryBtn');
 
-        // Playbook Setup selectors
         const inventoryFile = document.getElementById('inventoryFile');
         const hostsGroup = document.getElementById('hostsGroup');
         const playbookFile = document.getElementById('playbookFile');
         const sshUser = document.getElementById('sshUser');
         const parseOutputCheckbox = document.getElementById('parseOutputCheckbox');
+        const becomeCheckbox = document.getElementById('becomeCheckbox');
         const kFlagNote = document.getElementById('k-flag-note');
+        const KFlagNote = document.getElementById('K-flag-note');
 
-        // Main action selectors
         const convertBtn = document.getElementById('convertBtn');
         const copyYamlBtn = document.getElementById('copyYamlBtn');
         const copyCmdBtn = document.getElementById('copyCmdBtn');
         const clearBtn = document.getElementById('clearBtn');
+        
+        // Backup & Restore selectors
+        const backupHostsGroup = document.getElementById('backupHostsGroup');
+        const generateBackupBtn = document.getElementById('generateBackupBtn');
+        const backupPlaybookOutput = document.getElementById('backupPlaybookOutput');
+        const restoreHost = document.getElementById('restoreHost');
+        const restoreFile = document.getElementById('restoreFile');
+        const generateRestoreBtn = document.getElementById('generateRestoreBtn');
+        const restorePlaybookOutput = document.getElementById('restorePlaybookOutput');
 
-        const allSetupFields = [inventoryFile, hostsGroup, playbookFile, sshUser, inventoryGroupName, ipList];
+        const allSetupFields = [inventoryFile, hostsGroup, playbookFile, sshUser, inventoryGroupName, ipList, backupHostsGroup, restoreHost, restoreFile];
         
         // --- Tab Switching Logic ---
         const tabButtons = document.querySelectorAll('.tab-btn');
@@ -213,8 +262,54 @@
             inventoryOutput.textContent = inventoryContent;
         }
 
+        // --- Backup & Restore Logic ---
+        function generateBackupPlaybook() {
+            const group = backupHostsGroup.value.trim() || 'cisco_switches';
+            const playbook = `---
+- name: Backup Device Configurations
+  hosts: ${group}
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+    - name: Backup running configuration
+      cisco.ios.ios_config:
+        backup: yes
+      register: backup_results
+
+    - name: Show backup file path
+      debug:
+        msg: "Configuration for {{ inventory_hostname }} saved to {{ backup_results.backup_path }}"`;
+            backupPlaybookOutput.textContent = playbook;
+        }
+        
+        function generateRestorePlaybook() {
+            const host = restoreHost.value.trim() || '<target_host>';
+            const file = restoreFile.value.trim() || '<path_to_backup_file>';
+             const playbook = `---
+- name: Restore Device Configuration
+  hosts: ${host}
+  gather_facts: no
+  connection: network_cli
+  become: yes
+  become_method: enable
+
+  tasks:
+    - name: Restore configuration from file
+      cisco.ios.ios_config:
+        src: ${file}
+      notify: Save configuration
+
+  handlers:
+    - name: Save configuration
+      cisco.ios.ios_config:
+        save_when: always`;
+            restorePlaybookOutput.textContent = playbook;
+        }
+
         // --- Playbook Generation Logic ---
         function convertCliToYaml() {
+            // ... (existing playbook generation logic remains the same)
             const cliCommandsText = cliInput.value.trim();
             if (!cliCommandsText) {
                 yamlOutput.textContent = '# Please enter some CLI commands to generate the playbook.';
@@ -274,12 +369,20 @@ ${configLines}`);
             }
             
             const hosts = hostsGroup.value.trim() || 'your_hosts_group';
+            const useBecome = becomeCheckbox.checked;
+            
+            let becomeBlock = '';
+            if (useBecome) {
+                becomeBlock = `
+  become: yes
+  become_method: enable`;
+            }
 
             const playbookTemplate = `---
 - name: Generated Cisco Playbook
   hosts: ${hosts}
   gather_facts: no
-  connection: network_cli
+  connection: network_cli${becomeBlock}
 
   tasks:
 ${tasksYaml.join('\n\n')}`;
@@ -296,6 +399,12 @@ ${tasksYaml.join('\n\n')}`;
                 kFlagNote.style.display = 'block';
             } else {
                 kFlagNote.style.display = 'none';
+            }
+            if (useBecome) {
+                command += ' -K';
+                KFlagNote.style.display = 'block';
+            } else {
+                KFlagNote.style.display = 'none';
             }
             runCommand.textContent = command;
         }
@@ -334,10 +443,14 @@ ${tasksYaml.join('\n\n')}`;
                 field.value = '';
             });
             parseOutputCheckbox.checked = false;
+            becomeCheckbox.checked = false;
             yamlOutput.textContent = '# Fill setup to generate...';
             runCommand.textContent = '# Fill setup to generate...';
             inventoryOutput.textContent = '# Inventory will appear here...';
+            backupPlaybookOutput.textContent = '# Playbook will appear here...';
+            restorePlaybookOutput.textContent = '# Playbook will appear here...';
             kFlagNote.style.display = 'none';
+            KFlagNote.style.display = 'none';
         }
 
         // --- Event Listeners ---
@@ -346,6 +459,8 @@ ${tasksYaml.join('\n\n')}`;
         convertBtn.addEventListener('click', convertCliToYaml);
         copyYamlBtn.addEventListener('click', () => copyToClipboard('yamlOutput', copyYamlBtn));
         copyCmdBtn.addEventListener('click', () => copyToClipboard('runCommand', copyCmdBtn));
+        generateBackupBtn.addEventListener('click', generateBackupPlaybook);
+        generateRestoreBtn.addEventListener('click', generateRestorePlaybook);
         clearBtn.addEventListener('click', clearFields);
     </script>
 
